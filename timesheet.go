@@ -85,6 +85,12 @@ func currentTime(m int) time.Time {
 		now.Minute(), now.Second(), now.Nanosecond(), time.UTC)
 }
 
+func clearInitials(f *excelize.File, col string) {
+	f.SetCellValue(sheet, cell(col, initialsRow), "")
+	f.SetCellValue(sheet, cell(col, supervisorInitialsRow), "")
+	f.SetCellValue(sheet, cell(col, dayOfMonthRow), "")
+}
+
 func updateInitials(f *excelize.File, col string) {
 
 	f.SetCellValue(sheet, cell(col, initialsRow), *initials)
@@ -102,6 +108,7 @@ func currentMonthCol(f *excelize.File) (string, error) {
 			return "", fmt.Errorf("failed to read month name: %v", err)
 		}
 
+		clearInitials(f, col)
 		if monthName == currentMonthName {
 			return col, nil
 		}
