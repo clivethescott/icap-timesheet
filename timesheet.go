@@ -25,6 +25,7 @@ const (
 const (
 	months                = 12
 	monthRow              = 7
+	sickRow               = 41
 	initialsRow           = 42
 	supervisorInitialsRow = 43
 	dayOfMonthRow         = 44
@@ -44,6 +45,7 @@ var sheetIndex = flag.Int("sheet", 0, "0-based Sheet index")
 var month = flag.Int("month", int(time.Now().Month()), "1-based Month number")
 var year = flag.Int("year", time.Now().Year(), "Year")
 var leave = flag.Int("leave", 0, "Number of leave days")
+var sick = flag.Int("sick", 0, "Number of sick days")
 
 func lastDayOfMonth(fromDate time.Time) time.Time {
 	return time.Date(fromDate.Year(), fromDate.Month()+1, 0, 0, 0, 0, 0, time.UTC)
@@ -120,6 +122,11 @@ func cell(col string, row int) string {
 	return fmt.Sprintf("%s%d", col, row)
 }
 
+func updateSickDays(f *excelize.File, col string) {
+	sickCell := cell(col, sickRow)
+	f.SetCellValue(sheet, sickCell, *leave)
+}
+
 func updateLeaveDays(f *excelize.File, col string) {
 	leaveCell := cell(col, leaveRow)
 	f.SetCellValue(sheet, leaveCell, *leave)
@@ -141,6 +148,10 @@ func updateDaysEarned(f *excelize.File, col string) error {
 
 	if *leave > 0 {
 		updateLeaveDays(f, col)
+	}
+
+	if *sick > 0 {
+		updateSickDays(f, col)
 	}
 
 	newBalanceCell := cell(col, newBalanceRow)
